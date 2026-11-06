@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d projectdb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d skill_exam_2400030437"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -29,7 +29,10 @@ services:
       dockerfile: Dockerfile
     container_name: exam-service
     ports:
-      - "0437:8001"
+      - "0437:2006"
+    environment:
+      - DB_HOST=postgresdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresdb:5432/skill_exam_2400030437
     depends_on:
       postgresdb:
         condition: service_healthy
