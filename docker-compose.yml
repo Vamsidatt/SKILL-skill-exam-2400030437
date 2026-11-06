@@ -1,0 +1,45 @@
+name: microservices-deployment
+
+services:
+  postgresdb:
+    image: postgres:16-alpine
+    container_name: postgresdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: skill_exam_2400030437
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d projectdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - microservices-network
+
+  exam-service:
+    image: docker-skill-exam-2400030437:latest
+    build:
+      context: ./SOA-Task
+      dockerfile: Dockerfile
+    container_name: exam-service
+    ports:
+      - "0437:8001"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
+volumes:
+  postgres_data:
+
+networks:
+  microservices-network:
+    driver: bridge
